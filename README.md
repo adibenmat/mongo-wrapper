@@ -8,9 +8,9 @@ npm install mongo-wrapper
         "entityName" : "Adi"
     };
 
+    const QueryUtil = require("mongo-wrapper");
     const queries = new QueryUtil("MONGO_CONNECTION_STRING", "COLLECTION_NAME");
 
     //returns the edited entity with mongo id...
-    let dbEntity =  await queries.save(entity);    
-```
+    let dbEntity =  await queries.save(entity);
 
