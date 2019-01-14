@@ -1,5 +1,5 @@
 {
-  "name": "mongo-wrapper",
+  "name": "mongo-query-util",
   "version": "0.0.1",
   "description": "Wrapping Mongo client with basic functions with promises support",
   "main": "index.js",
@@ -12,7 +12,9 @@
   },
   "keywords": [
     "mongo-client",
-    "mongo-wrapper"
+    "mongo-wrapper",
+    "mongo-query",
+    "mongo-query-util"
   ],
   "author": "Adi Ben Matitiau",
   "license": "MIT",
