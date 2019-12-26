@@ -4,81 +4,112 @@ const MongoClient = MongoDB.MongoClient;
 const ObjectId = MongoDB.ObjectID;
 
 let QueryUtil = class QueryUtil {
-  constructor(url,collectionName) {
+  constructor(url) {
     this.url = url;
-    this.collectionName = collectionName;
+    this.dbInstace = null;
   }
 
-  getById(id) {
+  connect() {
+    return new Promise((resolve, reject) => {
+      MongoClient.connect(this.url, (err, db) => {
+        if (err) {
+          reject(err);
+        }
+
+        this.dbInstace = db;
+        resolve();
+      });
+    })
+  }
+
+  getById(collectionName, id) {
     return new Promise((resolve, reject) => {
       try {
-        const objectId =  new ObjectId(id);
-        MongoClient.connect(this.url, (err, db) => {
-          db
-            .collection(this.collectionName)
-            .findOne({ _id:  objectId}, (err, doc) => {
-              if(err){
-                throw err;
-              }              
-              db.close();
-              resolve(doc);
-            });
-        });
+        const objectId = new ObjectId(id);
+        this.dbInstace.collection(collectionName)
+          .findOne({
+            _id: objectId
+          }, (err, doc) => {
+            if (err) {
+              throw err;
+            }
+            db.close();
+            resolve(doc);
+          });
+      } catch (ex) {
+        reject(ex);
+      }
+    });
+  }
+  
+
+  findOne(collectionName, query) {
+    return new Promise((resolve, reject) => {
+      try {   
+        this.dbInstace.collection(collectionName)
+          .findOne(query, (err, doc) => {
+            if (err) {
+              throw err;
+            }
+            db.close();
+            resolve(doc);
+          });
       } catch (ex) {
         reject(ex);
       }
     });
   }
 
-  insert(objectToInsert){
+
+  findAll(collectionName, query) {
     return new Promise((resolve, reject) => {
-      try{      
-        MongoClient.connect(this.url, (err, db) => {
-          db
-            .collection(this.collectionName)
-            .insert(objectToInsert, function(err, result) {
-              if(err){
-                throw err;
-              }
-              db.close();
-              resolve(result);
-            });
-        });
-    }
-    catch(ex){
-      reject(ex);
-    }
+      try {   
+        this.dbInstace.collection(collectionName).find(query, (err, docs) => {
+            if (err) {
+              throw err;
+            }
+            db.close();
+            resolve(docs);
+          });
+      } catch (ex) {
+        reject(ex);
+      }
     });
   }
 
-  save(objectToSave){
-    console.log(objectToSave);
+  insert(collectionName, objectToInsert) {
     return new Promise((resolve, reject) => {
-      try{      
-        MongoClient.connect(this.url, (err, db) => {
-          db
-            .collection(this.collectionName)
-            .save(objectToSave, function(err, result) {
-              if(err){
-                throw err;
-              }
-              db.close();
-              resolve(result);
-            });
-        });
-    }
-    catch(ex){
-      reject(ex);
-    }
+      try {
+        this.dbInstace.collection(collectionName)
+          .insert(objectToInsert, function (err, result) {
+            if (err) {
+              throw err;
+            }
+            db.close();
+            resolve(result);
+          });
+      } catch (ex) {
+        reject(ex);
+      }
+    });
+  }
+
+  save(collectionName, objectToSave) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.dbInstace.collection(collectionName)
+          .save(objectToSave, function (err, result) {
+            if (err) {
+              throw err;
+            }
+            db.close();
+            resolve(result);
+          });
+      } catch (ex) {
+        reject(ex);
+      }
     });
   }
 };
 
-  module.exports = QueryUtil;
-
-
-
-
-
-
-
+module.exports = QueryUtil;
